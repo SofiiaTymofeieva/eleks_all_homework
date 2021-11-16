@@ -1,4 +1,5 @@
 import randomstring from 'randomstring';
+import fs from 'fs';
 
 let student1 = {
     name: randomstring.generate({length: 7, charset: 'alphabetic', capitalization: 'lowercase'}),
@@ -6,16 +7,32 @@ let student1 = {
     rate: Math.floor(Math.random() * 101),
 }
 
-let student1Json = JSON.stringify(student1);
-console.log(student1Json);
+fs.writeFile(
+    'studentFile.json', 
+    JSON.stringify(student1), 
+    (err) => {
+        if (err) throw err;
+            fs.readFile(
+            './studentFile.json',
+            'utf8', 
+            (err, data) => {
+                if (err) throw err;
+                const convertedFromJsonStudentObj =  JSON.parse(data);
 
-let student2 = JSON.parse(student1Json);
-console.log(student2);
+                console.log(convertedFromJsonStudentObj);
 
-student2.name = randomstring.generate({length: 4, charset: 'alphabetic', capitalization: 'uppercase'});
+                convertedFromJsonStudentObj.name = 'Jhon';
+                convertedFromJsonStudentObj.surname = 'Doe';
+                convertedFromJsonStudentObj.rate = 99;
 
-let mergeStudent = Object.assign(student1, student2);
-console.log(mergeStudent)
-
-let mergeStudentJson = JSON.stringify(mergeStudent);
-console.log(mergeStudentJson);
+                fs.appendFile(
+                    './studentFile.json', 
+                    JSON.stringify(convertedFromJsonStudentObj),
+                    (err)=>{ 
+                        if(err) throw err;
+                        console.log('File updated successfully')
+                    }
+                );
+            })
+    }
+);
